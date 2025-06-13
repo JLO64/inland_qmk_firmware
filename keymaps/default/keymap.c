@@ -91,8 +91,15 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     
     switch (layer) {
         case 1:
-            /* solid yellow */
+            /* Turn off all LEDs first */
             for (uint8_t i = led_min; i < led_max; i++) {
+                rgb_matrix_set_color(i, 0, 0, 0);
+            }
+            /* yellow only on Q-P (row 0, LEDs 1-10) and A-; (row 1, LEDs 13-22) */
+            for (uint8_t i = 1; i <= 10; i++) {  /* Q-P keys */
+                rgb_matrix_set_color(i, 255, 255, 0);
+            }
+            for (uint8_t i = 13; i <= 22; i++) { /* A-; keys */
                 rgb_matrix_set_color(i, 255, 255, 0);
             }
             return true;
