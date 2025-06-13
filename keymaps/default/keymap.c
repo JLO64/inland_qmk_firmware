@@ -74,3 +74,50 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 // clang-format on
+
+#ifdef RGB_MATRIX_ENABLE
+
+/* -------------------------------------------------------------
+ * Per-layer RGB matrix handling
+ *
+ *  Layer 0 : keep the board's default rainbow effect
+ *  Layer 1 : solid yellow
+ *  Layer 2 : solid green
+ *  Layer 3 : solid red
+ * -----------------------------------------------------------*/
+
+static void set_layer_color(uint8_t r, uint8_t g, uint8_t b) {
+    /* Use the SOLID_COLOR effect so all LEDs show the same colour. */
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+    rgb_matrix_set_color_all(r, g, b);
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    uint8_t layer = get_highest_layer(state);
+
+    switch (layer) {
+        case 1:
+            /* solid yellow */
+            set_layer_color(255, 255, 0);
+            break;
+
+        case 2:
+            /* solid green */
+            set_layer_color(0, 255, 0);
+            break;
+
+        case 3:
+            /* solid red */
+            set_layer_color(255, 0, 0);
+            break;
+
+        default:
+            /* Return to the board's default rainbow effect. */
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_ALL);
+            break;
+    }
+
+    return state;
+}
+
+#endif /* RGB_MATRIX_ENABLE */
