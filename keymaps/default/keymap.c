@@ -95,39 +95,37 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             for (uint8_t i = led_min; i < led_max; i++) {
                 rgb_matrix_set_color(i, 255, 255, 0);
             }
-            break;
+            return true;
 
         case 2:
             /* solid green */
             for (uint8_t i = led_min; i < led_max; i++) {
                 rgb_matrix_set_color(i, 0, 255, 0);
             }
-            break;
+            return true;
 
         case 3:
             /* solid red */
             for (uint8_t i = led_min; i < led_max; i++) {
                 rgb_matrix_set_color(i, 255, 0, 0);
             }
-            break;
+            return true;
 
         default:
-            /* Return to the board's default rainbow effect. */
-            rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_ALL);
-            return false; /* Let the default animation run */
+            /* Layer 0: Let the default rainbow animation run without interference */
+            return false;
     }
-    
-    return true;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     uint8_t layer = get_highest_layer(state);
     
     if (layer == 0) {
-        /* Return to the board's default rainbow effect. */
+        /* Return to the board's default rainbow effect and force refresh */
         rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_ALL);
+        rgb_matrix_reload_from_eeprom();
     } else {
-        /* For layers 1-3, disable animations so indicators can take over */
+        /* For layers 1-3, use solid color mode so indicators can override */
         rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     }
 
