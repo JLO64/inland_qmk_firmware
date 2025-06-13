@@ -86,35 +86,49 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *  Layer 3 : solid red
  * -----------------------------------------------------------*/
 
-static void set_layer_color(uint8_t r, uint8_t g, uint8_t b) {
-    /* Use the SOLID_COLOR effect so all LEDs show the same colour. */
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-    rgb_matrix_set_color_all(r, g, b);
-}
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    uint8_t layer = get_highest_layer(state);
-
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    uint8_t layer = get_highest_layer(layer_state);
+    
     switch (layer) {
         case 1:
             /* solid yellow */
-            set_layer_color(255, 255, 0);
+            for (uint8_t i = led_min; i < led_max; i++) {
+                rgb_matrix_set_color(i, 255, 255, 0);
+            }
             break;
 
         case 2:
             /* solid green */
-            set_layer_color(0, 255, 0);
+            for (uint8_t i = led_min; i < led_max; i++) {
+                rgb_matrix_set_color(i, 0, 255, 0);
+            }
             break;
 
         case 3:
             /* solid red */
-            set_layer_color(255, 0, 0);
+            for (uint8_t i = led_min; i < led_max; i++) {
+                rgb_matrix_set_color(i, 255, 0, 0);
+            }
             break;
 
         default:
             /* Return to the board's default rainbow effect. */
             rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_ALL);
-            break;
+            return false; /* Let the default animation run */
+    }
+    
+    return true;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    uint8_t layer = get_highest_layer(state);
+    
+    if (layer == 0) {
+        /* Return to the board's default rainbow effect. */
+        rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_ALL);
+    } else {
+        /* For layers 1-3, disable animations so indicators can take over */
+        rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
     }
 
     return state;
