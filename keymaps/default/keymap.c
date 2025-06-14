@@ -26,6 +26,18 @@
  * KC_NO; here it is simply omitted to match the 47-key macro.
  */
 
+
+enum custom_keycodes {
+    QMKBEST = SAFE_RANGE,
+    MACCY,
+    MACOS_SCREENLOCK,
+    FULL_SCREEN_WINDOW,
+    TILE_LEFT,
+    TILE_RIGHT,
+    MAXIMIZE_WINDOW,
+};
+ 
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     /* Layer 0: Base ------------------------------------------------------------------ */
@@ -34,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         /* Row 1 */ KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_QUOT,
         /* Row 2 */ KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_BSLS,
         /* Row 3 */
-            KC_GRV, KC_LCTL, KC_LALT, KC_LGUI, TO(2), LT(1, KC_SPC),
+            KC_GRV, KC_LCTL, KC_LALT, TO(2), KC_LGUI, LT(1, KC_SPC),
             /* --- matrix [3,6] is skipped by the MIT layout macro --- */
             KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_ENT
     ),
@@ -47,18 +59,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         /* Row 3 */
             KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
             /* skip [3,6] */
-            KC_VOLD, KC_VOLU, RGB_VAD, RGB_VAI, KC_NO
+            KC_NO, KC_NO, KC_NO, KC_NO, KC_NO
     ),
 
-    /* Layer 2: Navigation ------------------------------------------------------------- */
+    /* Layer 2: Vim Navigation --------------------------------------------------------- */
     [2] = LAYOUT_planck_mit(
-        /* Row 0 */ TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO,
+        /* Row 0 */ TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    MACOS_SCREENLOCK,
         /* Row 1 */ KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_NO,    KC_NO,
-        /* Row 2 */ KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO,
+        /* Row 2 */ KC_NO,   KC_NO,   KC_NO,   MACCY,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO,
         /* Row 3 */
             KC_NO, KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO,
             /* skip [3,6] */
-            KC_NO, KC_NO, KC_NO, KC_NO, KC_NO
+            KC_VOLD, KC_VOLU, KC_NO, KC_NO, KC_ENT
     ),
 
     /* Layer 3: Spare (mostly empty) --------------------------------------------------- */
@@ -105,10 +117,20 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             return true;
 
         case 2:
-            /* solid green */
+            /* Turn off all LEDs first */
             for (uint8_t i = led_min; i < led_max; i++) {
+                rgb_matrix_set_color(i, 0, 0, 0);
+            }
+            /* green only on active navigation keys */
+            rgb_matrix_set_color(0, 0, 255, 0);   /* KC_ESC */
+            rgb_matrix_set_color(11, 0, 255, 0);   /* KC_BSPC */
+            for (uint8_t i = 18; i <= 21; i++) {
                 rgb_matrix_set_color(i, 0, 255, 0);
             }
+            rgb_matrix_set_color(27, 0, 255, 0);   /* KC_C */
+            rgb_matrix_set_color(37, 0, 255, 0);  /* KC_LCTL */
+            rgb_matrix_set_color(42, 0, 255, 0);  /* KC_LCTL */
+            rgb_matrix_set_color(43, 0, 255, 0);  /* KC_LCTL */
             return true;
 
         case 3:
@@ -138,5 +160,63 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     return state;
 }
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+    case MACOS_SCREENLOCK:
+        if (record->event.pressed) {
+            // SEND_STRING(SS_DOWN(KC_LCTL) SS_DOWN(KC_LCMD) "Q");
+            register_code(KC_LCTL);
+            register_code(KC_LCMD);
+            register_code(KC_Q);
+            unregister_code(KC_LCTL);
+            unregister_code(KC_LCMD);
+            unregister_code(KC_Q);
+        }
+        break;
+    case MACCY:
+        if (record->event.pressed) {
+            register_code(KC_LSFT);
+            register_code(KC_LCMD);
+            register_code(KC_LBRC);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_LCMD);
+            unregister_code(KC_LBRC);
+        }
+        break;
+    case TILE_LEFT:
+        if (record->event.pressed) {
+            register_code(KC_LCTL);
+            register_code(KC_LOPT);
+            register_code(KC_LEFT);
+            unregister_code(KC_LCTL);
+            unregister_code(KC_LOPT);
+            unregister_code(KC_LEFT);
+        }
+        break;
+    case TILE_RIGHT:
+      if (record->event.pressed) {
+            register_code(KC_LCTL);
+            register_code(KC_LOPT);
+            register_code(KC_RGHT);
+            unregister_code(KC_LCTL);
+            unregister_code(KC_LOPT);
+            unregister_code(KC_RGHT);
+        }
+        break;
+    case MAXIMIZE_WINDOW:
+        if(record->event.pressed) {
+            register_code(KC_LCTL);
+            register_code(KC_LOPT);
+            register_code(KC_UP);
+            unregister_code(KC_LCTL);
+            unregister_code(KC_LOPT);
+            unregister_code(KC_UP);
+        }
+        break;
+  }
+    return true;
+};
+ 
 
 #endif /* RGB_MATRIX_ENABLE */
