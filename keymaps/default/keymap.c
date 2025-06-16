@@ -102,6 +102,28 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state);
     
     switch (layer) {
+        case 0:
+            /* Animated random colors - change every 100ms */
+            {
+                static uint32_t last_update = 0;
+                static uint32_t seed = 1;
+                uint32_t now = timer_read32();
+                
+                if (now - last_update > 100) {
+                    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+                    last_update = now;
+                }
+                
+                for (uint8_t i = led_min; i < led_max; i++) {
+                    uint32_t key_seed = seed + i * 2654435761UL;
+                    uint8_t r = (key_seed >> 16) & 0xFF;
+                    uint8_t g = (key_seed >> 8) & 0xFF;
+                    uint8_t b = key_seed & 0xFF;
+                    rgb_matrix_set_color(i, r, g, b);
+                }
+            }
+            return true;
+
         case 1:
             /* Turn off all LEDs first */
             for (uint8_t i = led_min; i < led_max; i++) {
@@ -141,22 +163,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             return true;
 
         default:
-            /* Layer 0: Let the default rainbow animation run without interference */
             return false;
     }
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    uint8_t layer = get_highest_layer(state);
-    
-    if (layer == 0) {
-        /* Return to the board's default rainbow effect and force refresh */
-        rgb_matrix_mode_noeeprom(RGB_MATRIX_CYCLE_ALL);
-        rgb_matrix_reload_from_eeprom();
-    } else {
-        /* For layers 1-3, use solid color mode so indicators can override */
-        rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-    }
+    /* For all layers, use solid color mode so indicators can override */
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
 
     return state;
 }
