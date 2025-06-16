@@ -119,10 +119,12 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                     // uint8_t r = (key_seed >> 16) & 0xFF;
                     // uint8_t g = (key_seed >> 8) & 0xFF;
                     // uint8_t b = key_seed & 0xFF;
-                    uint8_t variation = (key_seed & 0xFF) % 60;
-                    uint8_t r = 161 + (variation > 30 ? -(variation - 30) : variation);
-                    uint8_t g = 122 + (((key_seed >> 8) & 0xFF) % 40) - 20;
-                    uint8_t b = 246 - (((key_seed >> 16) & 0xFF) % 30);
+                    uint8_t r_var = (key_seed & 0xFF) % 120;
+                    uint8_t g_var = ((key_seed >> 8) & 0xFF) % 80;
+                    uint8_t b_var = ((key_seed >> 16) & 0xFF) % 160;
+                    uint8_t r = 161 - r_var;
+                    uint8_t g = g_var;
+                    uint8_t b = 246 - b_var;
                     rgb_matrix_set_color(i, r, g, b);
                 }
             }
