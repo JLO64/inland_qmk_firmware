@@ -35,6 +35,7 @@ enum custom_keycodes {
     TILE_LEFT,
     TILE_RIGHT,
     MAXIMIZE_WINDOW,
+    ENTER_AND_TO_LAYER0,
 };
  
 
@@ -70,7 +71,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         /* Row 3 */
             KC_NO, KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO,
             /* skip [3,6] */
-            KC_VOLD, KC_VOLU, KC_NO, KC_NO, KC_ENT
+            KC_VOLD, KC_VOLU, KC_NO, KC_NO, ENTER_AND_TO_LAYER0
     ),
 
     /* Layer 3: Spare (mostly empty) --------------------------------------------------- */
@@ -299,6 +300,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_LCTL);
             unregister_code(KC_LOPT);
             unregister_code(KC_UP);
+        }
+        break;
+    case ENTER_AND_TO_LAYER0:
+        if (record->event.pressed) {
+            register_code(KC_ENT);
+            unregister_code(KC_ENT);
+            layer_move(0);
         }
         break;
   }
