@@ -90,6 +90,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #ifdef RGB_MATRIX_ENABLE
 
 /* -------------------------------------------------------------
+ * Key press white effect tracking
+ * -----------------------------------------------------------*/
+#define MAX_PRESSED_KEYS 47
+#define KEY_PRESS_EFFECT_DURATION 500
+
+typedef struct {
+    uint8_t led_index;
+    uint32_t timestamp;
+    bool active;
+} pressed_key_t;
+
+static pressed_key_t pressed_keys[MAX_PRESSED_KEYS];
+static uint8_t pressed_key_count = 0;
+
+/* -------------------------------------------------------------
  * Per-layer RGB matrix handling
  *
  *  Layer 0 : keep the board's default rainbow effect
@@ -100,7 +115,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state);
+    uint32_t now = timer_read32();
     
+    // First, apply layer-specific effects
     switch (layer) {
         case 0:
             /* Animated random colors - change every 100ms */
@@ -128,7 +145,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                     rgb_matrix_set_color(i, r, g, b);
                 }
             }
-            return true;
+            break;
 
         case 1:
             /* Turn off all LEDs first */
@@ -142,7 +159,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             for (uint8_t i = 13; i <= 22; i++) { /* A-; keys */
                 rgb_matrix_set_color(i, 255, 255, 0);
             }
-            return true;
+            break;
 
         case 2:
             /* Turn off all LEDs first */
@@ -159,18 +176,35 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(37, 0, 255, 0);  /* KC_LCTL */
             rgb_matrix_set_color(42, 0, 255, 0);  /* KC_LCTL */
             rgb_matrix_set_color(43, 0, 255, 0);  /* KC_LCTL */
-            return true;
+            break;
 
         case 3:
             /* solid red */
             for (uint8_t i = led_min; i < led_max; i++) {
                 rgb_matrix_set_color(i, 255, 0, 0);
             }
-            return true;
+            break;
 
         default:
-            return false;
+            break;
     }
+    
+    // Apply white effect for recently pressed keys (supersedes layer effects)
+    for (uint8_t i = 0; i < pressed_key_count; i++) {
+        if (pressed_keys[i].active) {
+            if (now - pressed_keys[i].timestamp < KEY_PRESS_EFFECT_DURATION) {
+                // Key is still within effect duration - make it white
+                if (pressed_keys[i].led_index >= led_min && pressed_keys[i].led_index < led_max) {
+                    rgb_matrix_set_color(pressed_keys[i].led_index, 255, 255, 255);
+                }
+            } else {
+                // Key effect has expired - deactivate it
+                pressed_keys[i].active = false;
+            }
+        }
+    }
+    
+    return true;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -181,6 +215,28 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Track key releases for white effect
+    if (!record->event.pressed) {
+        // Convert matrix position to LED index
+        uint8_t led_index = g_led_config.matrix_co[record->event.key.row][record->event.key.col];
+        
+        // Only track if it's a valid LED position
+        if (led_index != NO_LED && pressed_key_count < MAX_PRESSED_KEYS) {
+            // Find empty slot or reuse existing slot for this LED
+            for (uint8_t i = 0; i < MAX_PRESSED_KEYS; i++) {
+                if (!pressed_keys[i].active || pressed_keys[i].led_index == led_index) {
+                    pressed_keys[i].led_index = led_index;
+                    pressed_keys[i].timestamp = timer_read32();
+                    pressed_keys[i].active = true;
+                    if (i >= pressed_key_count) {
+                        pressed_key_count = i + 1;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
     switch (keycode) {
     case MACOS_SCREENLOCK:
         if (record->event.pressed) {
