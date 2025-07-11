@@ -94,6 +94,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * -----------------------------------------------------------*/
 #define MAX_PRESSED_KEYS 47
 #define KEY_PRESS_EFFECT_DURATION 1000
+#define KEY_PRESS_FULL_BRIGHTNESS_DURATION 500
 
 typedef struct {
     uint8_t led_index;
@@ -192,10 +193,21 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // Apply white effect for recently pressed keys (supersedes layer effects)
     for (uint8_t i = 0; i < pressed_key_count; i++) {
         if (pressed_keys[i].active) {
-            if (now - pressed_keys[i].timestamp < KEY_PRESS_EFFECT_DURATION) {
-                // Key is still within effect duration - make it white
+            uint32_t elapsed = now - pressed_keys[i].timestamp;
+            if (elapsed < KEY_PRESS_EFFECT_DURATION) {
+                // Key is still within effect duration
                 if (pressed_keys[i].led_index >= led_min && pressed_keys[i].led_index < led_max) {
-                    rgb_matrix_set_color(pressed_keys[i].led_index, 255, 255, 255);
+                    uint8_t brightness;
+                    if (elapsed < KEY_PRESS_FULL_BRIGHTNESS_DURATION) {
+                        // Full brightness phase (0-1000ms)
+                        brightness = 255;
+                    } else {
+                        // Fade phase (1000-1500ms): fade from 255 to 127 (50%)
+                        uint32_t fade_elapsed = elapsed - KEY_PRESS_FULL_BRIGHTNESS_DURATION;
+                        uint32_t fade_duration = KEY_PRESS_EFFECT_DURATION - KEY_PRESS_FULL_BRIGHTNESS_DURATION;
+                        brightness = 255 - ((255 - 127) * fade_elapsed / fade_duration);
+                    }
+                    rgb_matrix_set_color(pressed_keys[i].led_index, brightness, brightness, brightness);
                 }
             } else {
                 // Key effect has expired - deactivate it
