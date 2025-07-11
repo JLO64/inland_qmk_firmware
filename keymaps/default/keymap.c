@@ -118,7 +118,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t layer = get_highest_layer(layer_state);
     uint32_t now = timer_read32();
     
-    // First, apply layer-specific effects
+    // Apply layer-specific effects first
     switch (layer) {
         case 0:
             /* Animated random colors - change every 100ms */
@@ -196,13 +196,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             uint32_t elapsed = now - pressed_keys[i].timestamp;
             if (elapsed < KEY_PRESS_EFFECT_DURATION) {
                 // Key is still within effect duration
-                if (pressed_keys[i].led_index >= led_min && pressed_keys[i].led_index < led_max) {
+                if (pressed_keys[i].led_index < RGB_MATRIX_LED_COUNT) {
                     uint8_t brightness;
                     if (elapsed < KEY_PRESS_FULL_BRIGHTNESS_DURATION) {
-                        // Full brightness phase (0-1000ms)
+                        // Full brightness phase (0-500ms)
                         brightness = 255;
                     } else {
-                        // Fade phase (1000-1500ms): fade from 255 to 127 (50%)
+                        // Fade phase (500-1000ms): fade from 255 to 127 (50%)
                         uint32_t fade_elapsed = elapsed - KEY_PRESS_FULL_BRIGHTNESS_DURATION;
                         uint32_t fade_duration = KEY_PRESS_EFFECT_DURATION - KEY_PRESS_FULL_BRIGHTNESS_DURATION;
                         brightness = 255 - ((255 - 127) * fade_elapsed / fade_duration);
