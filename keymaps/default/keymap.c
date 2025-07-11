@@ -93,7 +93,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * Key press white effect tracking
  * -----------------------------------------------------------*/
 #define MAX_PRESSED_KEYS 47
-#define KEY_PRESS_EFFECT_DURATION 500
+#define KEY_PRESS_EFFECT_DURATION 1000
 
 typedef struct {
     uint8_t led_index;
@@ -139,9 +139,9 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                     uint8_t r_var = (key_seed & 0xFF) % 120;
                     uint8_t g_var = ((key_seed >> 8) & 0xFF) % 80;
                     uint8_t b_var = ((key_seed >> 16) & 0xFF) % 160;
-                    uint8_t r = 161 - r_var;
-                    uint8_t g = g_var;
-                    uint8_t b = 246 - b_var;
+                    uint8_t r = (161 - r_var) / 2;
+                    uint8_t g = g_var / 2;
+                    uint8_t b = (246 - b_var) / 2;
                     rgb_matrix_set_color(i, r, g, b);
                 }
             }
