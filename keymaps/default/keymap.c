@@ -65,8 +65,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     /* Layer 2: Vim Navigation --------------------------------------------------------- */
     [2] = LAYOUT_planck_mit(
-        /* Row 0 */ TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    MACOS_SCREENLOCK,
-        /* Row 1 */ KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_NO,    KC_NO,
+        /* Row 0 */ TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   TO(0),   KC_NO,   KC_NO,    MACOS_SCREENLOCK,
+        /* Row 1 */ KC_NO,   TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_NO,    KC_NO,
         /* Row 2 */ KC_NO,   KC_NO,   KC_NO,   MACCY,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO,
         /* Row 3 */
             KC_NO, KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO,
@@ -156,10 +156,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             }
             /* yellow only on Q-P (row 0, LEDs 1-10) and A-; (row 1, LEDs 13-22) */
             for (uint8_t i = 1; i <= 10; i++) {  /* Q-P keys */
-                rgb_matrix_set_color(i, 255, 255, 0);
+                rgb_matrix_set_color(i, 127, 127, 0);
             }
             for (uint8_t i = 13; i <= 22; i++) { /* A-; keys */
-                rgb_matrix_set_color(i, 255, 255, 0);
+                rgb_matrix_set_color(i, 127, 127, 0);
             }
             break;
 
@@ -169,15 +169,18 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 rgb_matrix_set_color(i, 0, 0, 0);
             }
             /* green only on active navigation keys */
-            rgb_matrix_set_color(0, 0, 255, 0);   /* KC_ESC */
-            rgb_matrix_set_color(11, 0, 255, 0);   /* KC_BSPC */
+            rgb_matrix_set_color(0, 0, 127, 0);   /* TO(0) - ESC key */
+            rgb_matrix_set_color(8, 0, 127, 0);   /* TO(0) - i key */
+            rgb_matrix_set_color(11, 0, 127, 0);   /* MACOS_SCREENLOCK */
+            rgb_matrix_set_color(13, 0, 127, 0);   /* TO(0) - a key */
             for (uint8_t i = 18; i <= 21; i++) {
-                rgb_matrix_set_color(i, 0, 255, 0);
+                rgb_matrix_set_color(i, 0, 127, 0);  /* arrow keys */
             }
-            rgb_matrix_set_color(27, 0, 255, 0);   /* KC_C */
-            rgb_matrix_set_color(37, 0, 255, 0);  /* KC_LCTL */
-            rgb_matrix_set_color(42, 0, 255, 0);  /* KC_LCTL */
-            rgb_matrix_set_color(43, 0, 255, 0);  /* KC_LCTL */
+            rgb_matrix_set_color(27, 0, 127, 0);   /* MACCY - c key */
+            rgb_matrix_set_color(37, 0, 127, 0);  /* KC_LCTL */
+            rgb_matrix_set_color(42, 0, 127, 0);  /* KC_VOLD */
+            rgb_matrix_set_color(43, 0, 127, 0);  /* KC_VOLU */
+            rgb_matrix_set_color(46, 0, 127, 0);  /* ENTER_AND_TO_LAYER0 */
             break;
 
         case 3:
