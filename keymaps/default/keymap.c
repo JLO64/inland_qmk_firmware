@@ -45,11 +45,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT_planck_mit(
         /* Row 0 */ KC_ESC,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,     KC_BSPC,
         /* Row 1 */ KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_QUOT,
-        /* Row 2 */ KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_BSLS,
+        /* Row 2 */ KC_GRV, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_BSLS,
         /* Row 3 */
-            KC_GRV, KC_LCTL, KC_LALT, TO(2), KC_LGUI, LT(1, KC_SPC),
+            KC_LCTL, KC_LBRC, KC_LALT, TO(2), KC_LGUI, LT(1, KC_SPC),
             /* --- matrix [3,6] is skipped by the MIT layout macro --- */
-            KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_ENT
+            KC_LSFT, KC_MINS, KC_EQL, KC_RBRC, KC_ENT
     ),
 
     /* Layer 1: Numpad / Media --------------------------------------------------------- */
@@ -69,9 +69,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         /* Row 1 */ KC_NO,   TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_NO,    KC_NO,
         /* Row 2 */ KC_NO,   KC_NO,   KC_NO,   MACCY,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO,
         /* Row 3 */
-            KC_NO, KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO,
+            KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
             /* skip [3,6] */
-            KC_VOLD, KC_VOLU, KC_NO, KC_NO, ENTER_AND_TO_LAYER0
+            KC_NO, KC_VOLD, KC_VOLU, KC_NO, ENTER_AND_TO_LAYER0
     ),
 
     /* Layer 3: Spare (mostly empty) --------------------------------------------------- */
@@ -177,9 +177,9 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 rgb_matrix_set_color(i, 0, 127, 0);  /* arrow keys */
             }
             rgb_matrix_set_color(27, 0, 127, 0);   /* MACCY - c key */
-            rgb_matrix_set_color(37, 0, 127, 0);  /* KC_LCTL */
-            rgb_matrix_set_color(42, 0, 127, 0);  /* KC_VOLD */
-            rgb_matrix_set_color(43, 0, 127, 0);  /* KC_VOLU */
+            rgb_matrix_set_color(36, 0, 127, 0);  /* KC_LCTL */
+            rgb_matrix_set_color(43, 0, 127, 0);  /* KC_VOLD */
+            rgb_matrix_set_color(44, 0, 127, 0);  /* KC_VOLU */
             rgb_matrix_set_color(46, 0, 127, 0);  /* ENTER_AND_TO_LAYER0 */
             break;
 
