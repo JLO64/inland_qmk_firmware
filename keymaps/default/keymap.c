@@ -311,11 +311,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case ENTER_AND_TO_LAYER0:
         if (record->event.pressed) {
-            register_code(KC_ENT);
-            unregister_code(KC_ENT);
+            tap_code(KC_ENT);
+        } else {
             layer_move(0);
         }
-        break;
+        return false;
   }
     return true;
 };

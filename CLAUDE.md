@@ -8,14 +8,28 @@ This is a QMK (Quantum Mechanical Keyboard) firmware project for the Inland MK47
 
 ## Build Commands
 
-### Building firmware:
+This repository is the source of the MK47 keyboard files. Before building, replace the copy in the configured QMK checkout:
+
 ```bash
-make inland/mk47:default
+rm -rf ~/qmk_firmware/keyboards/inland/mk47
+cp -R ~/Documents/GitHub/inland_qmk_firmware \
+  ~/qmk_firmware/keyboards/inland/mk47
 ```
 
-### Flashing firmware to keyboard:
+Build from the QMK checkout:
+
 ```bash
-make inland/mk47:default:flash
+cd ~/qmk_firmware
+qmk compile -kb inland/mk47 -km default
+```
+
+The resulting firmware is `~/qmk_firmware/inland_mk47_default.bin`.
+
+To build and flash from the same directory:
+
+```bash
+cd ~/qmk_firmware
+qmk flash -kb inland/mk47 -km default
 ```
 
 ## Architecture
