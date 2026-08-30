@@ -31,6 +31,7 @@ enum custom_keycodes {
     QMKBEST = SAFE_RANGE,
     MACCY,
     MACOS_SCREENLOCK,
+    MACOS_SCREENSHOT,
     FULL_SCREEN_WINDOW,
     TILE_LEFT,
     TILE_RIGHT,
@@ -66,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Layer 2: Vim Navigation --------------------------------------------------------- */
     [2] = LAYOUT_planck_mit(
         /* Row 0 */ TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   TO(0),   KC_NO,   KC_NO,    MACOS_SCREENLOCK,
-        /* Row 1 */ KC_NO,   TO(0),   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_NO,    KC_NO,
+        /* Row 1 */ KC_NO,   TO(0),   MACOS_SCREENSHOT, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_NO, KC_NO,
         /* Row 2 */ KC_NO,   KC_NO,   KC_NO,   MACCY,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_NO,
         /* Row 3 */
             KC_LCTL, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
@@ -177,6 +178,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(8, 0, 127, 0);   /* TO(0) - i key */
             rgb_matrix_set_color(11, 0, 127, 0);   /* MACOS_SCREENLOCK */
             rgb_matrix_set_color(13, 0, 127, 0);   /* TO(0) - a key */
+            rgb_matrix_set_color(14, 0, 127, 0);   /* MACOS_SCREENSHOT - s key */
             for (uint8_t i = 18; i <= 21; i++) {
                 rgb_matrix_set_color(i, 0, 127, 0);  /* arrow keys */
             }
@@ -267,6 +269,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_LCTL);
             unregister_code(KC_LCMD);
             unregister_code(KC_Q);
+        }
+        break;
+    case MACOS_SCREENSHOT:
+        if (record->event.pressed) {
+            register_code(KC_LCMD);
+            register_code(KC_LSFT);
+            register_code(KC_5);
+            unregister_code(KC_5);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_LCMD);
         }
         break;
     case MACCY:
