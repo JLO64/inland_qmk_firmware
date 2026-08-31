@@ -57,6 +57,9 @@ qmk flash -kb inland/mk47 -km default
 ### RGB Matrix Implementation:
 The keyboard implements per-layer RGB lighting in `keymaps/default/keymap.c:95-121` using `layer_state_set_user()` function. RGB LED positions are defined in `mk47.c:19-76` following the SNLED27351 manual's CB/CA addressing scheme.
 
+### Active-Key Lighting Convention:
+When adding or enabling a key on a layer, update that layer's RGB matrix indicator logic so the key is illuminated with the layer's active-key color. Likewise, when disabling or removing a key, remove its active-key lighting. Confirm the LED index against `g_led_config` in `mk47.c` rather than assuming the key's matrix position matches its LED index.
+
 ## Bootloader Access
 
 Enter bootloader mode:
