@@ -37,7 +37,13 @@ enum custom_keycodes {
     TILE_RIGHT,
     MAXIMIZE_WINDOW,
     ENTER_AND_TO_LAYER0,
+    LAYER_ACCESS,
 };
+
+static uint16_t layer_access_press_time;
+static uint16_t layer_access_last_tap_time;
+static bool     layer_access_tap_pending;
+static bool     layer_access_second_tap;
  
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -45,10 +51,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Layer 0: Base ------------------------------------------------------------------ */
     [0] = LAYOUT_planck_mit(
         /* Row 0 */ KC_ESC,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,     KC_BSPC,
-        /* Row 1 */ TT(1),   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_QUOT,
+        /* Row 1 */ KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_QUOT,
         /* Row 2 */ KC_GRV, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_BSLS,
         /* Row 3 */
-            KC_LCTL, KC_LBRC, KC_LALT, TO(2), KC_LGUI, KC_SPC,
+            KC_LCTL, KC_LBRC, KC_LALT, LAYER_ACCESS, KC_LGUI, KC_SPC,
             /* --- matrix [3,6] is skipped by the MIT layout macro --- */
             KC_LSFT, KC_MINS, KC_EQL, KC_RBRC, KC_ENT
     ),
@@ -261,6 +267,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     
     switch (keycode) {
+    case LAYER_ACCESS:
+        if (record->event.pressed) {
+            layer_access_second_tap = layer_access_tap_pending &&
+                                      timer_elapsed(layer_access_last_tap_time) < TAPPING_TERM;
+            layer_access_tap_pending = false;
+            layer_access_press_time  = timer_read();
+            layer_on(1);
+        } else if (timer_elapsed(layer_access_press_time) >= TAPPING_TERM) {
+            // A hold is momentary Layer 1 and always returns to the base layer.
+            layer_access_tap_pending = false;
+            layer_move(0);
+        } else if (layer_access_second_tap) {
+            // A second tap started within TAPPING_TERM selects Layer 2.
+            layer_move(2);
+        } else {
+            // The first tap selects Layer 1; its transparent key position accepts tap two.
+            layer_access_last_tap_time = timer_read();
+            layer_access_tap_pending   = true;
+            layer_move(1);
+        }
+        return false;
     case MACOS_SCREENLOCK:
         if (record->event.pressed) {
             // SEND_STRING(SS_DOWN(KC_LCTL) SS_DOWN(KC_LCMD) "Q");
