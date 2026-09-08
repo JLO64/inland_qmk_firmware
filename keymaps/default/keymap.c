@@ -61,11 +61,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     /* Layer 1: Numpad / Media --------------------------------------------------------- */
     [1] = LAYOUT_planck_mit(
-        /* Row 0 */ TO(0),   KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,   KC_9,   KC_0,    KC_DEL,
+        /* Row 0 */ TO(0),   KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,   KC_9,   KC_0,    KC_BSPC,
         /* Row 1 */ KC_TRNS, S(KC_1), S(KC_2), S(KC_3), S(KC_4), S(KC_5), S(KC_6), S(KC_7), S(KC_8), S(KC_9), S(KC_0), KC_TRNS,
         /* Row 2 */ KC_TRNS, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
         /* Row 3 */
-            KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+            KC_TRNS, KC_TRNS, KC_TRNS, TO(2), KC_TRNS, KC_TRNS,
             /* skip [3,6] */
             KC_TRNS, KC_F12, KC_TRNS, KC_TRNS, KC_TRNS
     ),
@@ -173,6 +173,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 rgb_matrix_set_color(i, 127, 127, 0);
             }
             rgb_matrix_set_color(37, 127, 127, 0);  /* Row 3: F12 key */
+            rgb_matrix_set_color(11, 127, 127, 0);  /* Row 0: BackSpace key */
+            rgb_matrix_set_color(39, 127, 127, 0);  /* Row 3: TO(2) layer-2 key */
             break;
 
         case 2:
